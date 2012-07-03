@@ -3,7 +3,7 @@ require 'digest/sha1'
 require 'net/https'
 require 'base64'
 
-# Adapted from: 
+# Adapted from:
 # Confabulus @ http://blog.confabulus.com/2011/05/13/cloudfront-invalidation-from-ruby
 class CloudfrontInvalidator
   def initialize(aws_account, aws_secret, distribution)
@@ -13,6 +13,7 @@ class CloudfrontInvalidator
   end
 
   def invalidate(items)
+    items = to_cf_keys(items)
     date = Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
     digest = Base64.encode64(
       OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'), @aws_secret, date)).strip
@@ -44,7 +45,7 @@ class CloudfrontInvalidator
 
   def print_operation_result(http_response, items)
     success = http_response.code == '201'
-    puts "Invalidating items"
+    puts "Invalidating Cloudfront items"
     items.each do |item|
       puts "  #{item}"
     end
@@ -54,6 +55,10 @@ class CloudfrontInvalidator
       puts "FAILED, reason:"
       puts http_response.body
     end
+  end
+
+  def to_cf_keys(s3_keys)
+    s3_keys.map { |s3_key| "/#{s3_key}" }
   end
 
   def to_xml(items)

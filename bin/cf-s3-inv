@@ -1,21 +1,43 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'aws-sdk'
-require 'cloudfront_invalidator'
+require 'optparse'
+require File.dirname(__FILE__)+'/../lib/cloudfront_invalidator'
+require File.dirname(__FILE__)+'/../lib/s3_loader'
 
-key = ARGV[0]
-secret = ARGV[1]
-s3_bucket = ARGV[2]
-cloudfront_distribution_id = ARGV[3]
-
-s3 = AWS::S3.new(
-  :access_key_id => key,
-  :secret_access_key => secret)
-
-s3_objects = []
-s3.buckets[s3_bucket].objects.each do |object|
-  s3_objects << "/#{object.key}"
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename(__FILE__)} [options]"
+  opts.separator ""
+  opts.separator "Invalidate an S3-based Cloudfront distribution"
+  opts.separator ""
+  opts.separator "Options:"
+  opts.on("-k", "--key AWS KEY",
+          "Amazon Web Services API key that has access to your S3 and Cloudfront") do |val|
+    options[:key] = val
+  end
+  opts.on("-s", "--secret AWS SECRET",
+          "Amazon Web Services API secret key") do |val|
+    options[:secret] = val
+  end
+  opts.on("-b", "--bucket BUCKET NAME",
+          "S3 bucket name") do |val|
+    options[:bucket] = val
+  end
+  opts.on("-d", "--distribution CLOUDFRONT ID",
+          "Cloudfront distribution id") do |val|
+    options[:distribution] = val
+  end
 end
 
-invalidator = CloudfrontInvalidator.new(key, secret, cloudfront_distribution_id)
-invalidator.invalidate(s3_objects)
+ARGV_ORIGINAL = ARGV.dup
+optparse.parse!
+if ARGV_ORIGINAL.length == 0
+  puts optparse.help
+  exit
+end
+
+s3_object_keys = S3Loader.new(
+  options[:key], options[:secret]).list_keys(options[:bucket])
+
+invalidator = CloudfrontInvalidator.new(
+  options[:key], options[:secret], options[:distribution])
+invalidator.invalidate(s3_object_keys)
