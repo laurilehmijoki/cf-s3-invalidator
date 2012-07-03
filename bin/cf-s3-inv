@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'aws-sdk'
+require 'cloudfront_invalidator'
+
+key = ARGV[0]
+secret = ARGV[1]
+s3_bucket = ARGV[2]
+cloudfront_distribution_id = ARGV[3]
+
+s3 = AWS::S3.new(
+  :access_key_id => key,
+  :secret_access_key => secret)
+
+s3_objects = []
+s3.buckets[s3_bucket].objects.each do |object|
+  s3_objects << "/#{object.key}"
+end
+
+invalidator = CloudfrontInvalidator.new(key, secret, cloudfront_distribution_id)
+invalidator.invalidate(s3_objects)
