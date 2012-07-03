@@ -52,7 +52,7 @@ class CloudfrontInvalidator
       puts "succeeded"
     else
       puts "FAILED, reason:"
-      puts res.body
+      puts http_response.body
     end
   end
 
