@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'cf-s3-invalidator'
-  s.version       = '0.1.0'
+  s.version       = '0.2.0'
   s.date          = '2012-07-03'
   s.summary       = 'A tool for invalidating AWS S3-based Cloudfront distributions'
   s.description   =
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
     The Cloudfront distribution must be based on the S3 bucket.'
   s.authors       = ['Lauri Lehmijoki']
   s.email         = 'lauri.lehmijoki@iki.fi'
-  s.files         = ['lib/cloudfront_invalidator.rb']
+  s.files         = `git ls-files`.split("\n")
   s.require_paths = ['lib']
   s.executables   << 'cf-s3-inv'
   s.homepage      = 'https://github.com/laurilehmijoki/cf-s3-invalidator'
