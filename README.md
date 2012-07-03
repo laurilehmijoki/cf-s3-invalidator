@@ -14,7 +14,7 @@ calls on them the invalidation REST API of Cloudfront.
 
 You can specify the configuration as CLI parameters:
 
-`cf-s3-inv <AWS-KEY> <AWS-SECRET> <S3-BUCKET-NAME> <CLOUDFRONT-DISTRIBUTION-ID>`
+`cf-s3-inv --key <AWS-KEY> --secret <AWS-SECRET> --bucket <S3-BUCKET-NAME> --distribution <CLOUDFRONT-DISTRIBUTION-ID>`
 
 Or you can store them into the file *_cf_s3_invalidator.yml*:
 
