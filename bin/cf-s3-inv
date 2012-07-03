@@ -1,39 +1,108 @@
 #!/usr/bin/env ruby
 require 'optparse'
+require 'yaml'
 require File.dirname(__FILE__)+'/../lib/cloudfront_invalidator'
 require File.dirname(__FILE__)+'/../lib/s3_loader'
 
-options = {}
-optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename(__FILE__)} [options]"
-  opts.separator ""
-  opts.separator "Invalidate an S3-based Cloudfront distribution"
-  opts.separator ""
-  opts.separator "Options:"
-  opts.on("-k", "--key AWS KEY",
-          "Amazon Web Services API key that has access to your S3 and Cloudfront") do |val|
-    options[:key] = val
+class CLIOptParser
+  def initialize
+    @optparse = OptionParser.new do |opts|
+      options = {}
+      opts.banner = "Usage: #{File.basename(__FILE__)} [options]"
+      opts.separator ""
+      opts.separator "Invalidate an S3-based Cloudfront distribution"
+      opts.separator ""
+      opts.separator "Options:"
+      opts.on("-k", "--key AWS KEY",
+              "Amazon Web Services API key that has access to your S3 and Cloudfront") do |val|
+        options[:key] = val
+      end
+      opts.on("-s", "--secret AWS SECRET",
+              "Amazon Web Services API secret key") do |val|
+        options[:secret] = val
+      end
+      opts.on("-b", "--bucket BUCKET NAME",
+              "S3 bucket name") do |val|
+        options[:bucket] = val
+      end
+      opts.on("-d", "--distribution CLOUDFRONT ID",
+              "Cloudfront distribution id") do |val|
+        options[:distribution] = val
+      end
+      @options = options
+    end
   end
-  opts.on("-s", "--secret AWS SECRET",
-          "Amazon Web Services API secret key") do |val|
-    options[:secret] = val
+
+  def parse
+    @optparse.parse!
+    @options
   end
-  opts.on("-b", "--bucket BUCKET NAME",
-          "S3 bucket name") do |val|
-    options[:bucket] = val
-  end
-  opts.on("-d", "--distribution CLOUDFRONT ID",
-          "Cloudfront distribution id") do |val|
-    options[:distribution] = val
+
+  def print_help
+    puts @optparse.help
   end
 end
 
-ARGV_ORIGINAL = ARGV.dup
-optparse.parse!
-if ARGV_ORIGINAL.length == 0
-  puts optparse.help
-  exit
+class FileOptionParser
+  def parse
+    yml = YAML.load_file(get_conf_file_path)
+    {
+      :key => yml['s3_key'],
+      :secret => yml['s3_secret'],
+      :bucket => yml['s3_bucket'],
+      :distribution => yml['cloudfront_distribution_id']
+    }
+  end
+
+  def get_conf_file_name
+    "_cf_s3_invalidator.yml"
+  end
+
+  def get_conf_file_path
+    Dir.pwd + "/#{get_conf_file_name}"
+  end
+
+  def conf_file_exists
+    File.exists?(get_conf_file_path)
+  end
+
+  def sample_conf_file
+    sample = <<-EOF
+s3_key: YOUR_AWS_S3_ACCESS_KEY_ID
+s3_secret: YOUR_AWS_S3_SECRET_ACCESS_KEY
+s3_bucket: your.blog.bucket.com
+cloudfront_distribution_id: YOUR_CLOUDFRONT_DISTRIBUTION_ID
+    EOF
+  end
 end
+
+class OptionParser
+  def self.parse
+    if ARGV.length == 0
+      file_parser = FileOptionParser.new
+      unless file_parser.conf_file_exists
+        puts "The configuration file '#{file_parser.get_conf_file_name}' is missing"
+        puts "Here is a sample:"
+        puts ""
+        puts file_parser.sample_conf_file
+        puts ""
+        exit
+      end
+      file_parser.parse
+    else
+      args_original = ARGV.dup
+      cli_parser = CLIOptParser.new
+      options = cli_parser.parse
+      if args_original.length == 0
+        cli_parser.print_help
+        exit
+      end
+      options
+    end
+  end
+end
+
+options = OptionParser.parse
 
 s3_object_keys = S3Loader.new(
   options[:key], options[:secret]).list_keys(options[:bucket])
