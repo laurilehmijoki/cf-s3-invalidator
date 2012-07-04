@@ -27,6 +27,12 @@ Then you can just run:
 
 `cf-s3-inv`
 
+## Development
+
+Run Cucumber tests:
+
+`bundle exec cucumber`
+
 ## License
 
 MIT

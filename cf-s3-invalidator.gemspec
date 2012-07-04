@@ -16,4 +16,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/laurilehmijoki/cf-s3-invalidator'
 
   s.add_dependency 'aws-sdk'
+
+  s.add_development_dependency 'cucumber'
+  s.add_development_dependency 'aruba', '>= 0.4.7'
 end
