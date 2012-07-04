@@ -26,3 +26,7 @@ Or you can store them into the file *_cf_s3_invalidator.yml*:
 Then you can just run:
 
 `cf-s3-inv`
+
+## License
+
+MIT
