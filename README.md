@@ -32,9 +32,9 @@ Then you can just run:
 [![Build Status](https://secure.travis-ci.org/laurilehmijoki/cf-s3-invalidator.png)]
 (http://travis-ci.org/laurilehmijoki/cf-s3-invalidator)
 
-Run Cucumber tests:
+Run tests:
 
-`bundle exec cucumber`
+`rake test`
 
 ## License
 

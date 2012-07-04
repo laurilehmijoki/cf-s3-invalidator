@@ -1,4 +1,7 @@
+desc "Build the project"
+task :default => 'test'
+
 desc "Run tests"
-task :default do
+task :test do
   sh "bundle exec cucumber"
 end
