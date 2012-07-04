@@ -18,5 +18,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'aws-sdk'
 
   s.add_development_dependency 'cucumber'
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'aruba', '>= 0.4.7'
 end
