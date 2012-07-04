@@ -62,6 +62,6 @@ class CloudfrontInvalidator
   end
 
   def to_xml(items)
-    items.map{ |item| "<Path>#{item}</Path>" }
+    items.map { |item| "<Path>#{item}</Path>" }
   end
 end
