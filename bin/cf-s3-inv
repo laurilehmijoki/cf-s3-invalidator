@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'extensions/kernel' # For 'require_relative' support
+unless Kernel.respond_to?(:require_relative)
+  module Kernel
+    def require_relative(path)
+      require File.join(File.dirname(caller[0]), path.to_str)
+    end
+  end
+end
 require 'optparse'
 require 'yaml'
 require_relative '../lib/cloudfront_invalidator'
