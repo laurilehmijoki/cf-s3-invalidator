@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'extensions/kernel' # For 'require_relative' support
 require 'optparse'
 require 'yaml'
-require File.dirname(__FILE__)+'/../lib/cloudfront_invalidator'
-require File.dirname(__FILE__)+'/../lib/s3_loader'
+require_relative '../lib/cloudfront_invalidator'
+require_relative '../lib/s3_loader'
 
 class UI
   def initialize
