@@ -1,7 +1,9 @@
+require 'rubygems'
 require 'openssl'
 require 'digest/sha1'
 require 'net/https'
 require 'base64'
+require 'colored'
 
 # Adapted from:
 # Confabulus @ http://blog.confabulus.com/2011/05/13/cloudfront-invalidation-from-ruby
@@ -45,14 +47,14 @@ class CloudfrontInvalidator
 
   def print_operation_result(http_response, items)
     success = http_response.code == '201'
-    puts "Invalidating Cloudfront items"
+    puts "Invalidating Cloudfront items".cyan
     items.each do |item|
-      puts "  #{item}"
+      puts "  #{item}".blue
     end
     if success
-      puts "succeeded"
+      puts "succeeded".green.bold
     else
-      puts "FAILED, reason:"
+      puts "FAILED, reason:".red
       puts http_response.body
     end
   end
