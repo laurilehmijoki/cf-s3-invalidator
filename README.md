@@ -14,13 +14,12 @@ calls on them the invalidation REST API of Cloudfront.
 
 You can specify the configuration as CLI parameters:
 
-`cf-s3-inv --key <AWS-KEY> --secret <AWS-SECRET> --bucket <S3-BUCKET-NAME> --distribution <CLOUDFRONT-DISTRIBUTION-ID>`
+`cf-s3-inv --key <AWS-KEY> --secret <AWS-SECRET> --distribution <CLOUDFRONT-DISTRIBUTION-ID>`
 
 Or you can store them into the file *_cf_s3_invalidator.yml*:
 
     s3_key: YOUR_AWS_S3_ACCESS_KEY_ID
     s3_secret: YOUR_AWS_S3_SECRET_ACCESS_KEY
-    s3_bucket: your.bucket.com
     cloudfront_distribution_id: YOUR_CLOUDFRONT_DISTRIBUTION_ID
 
 Then you can just run:

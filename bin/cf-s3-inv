@@ -9,7 +9,7 @@ unless Kernel.respond_to?(:require_relative)
 end
 require 'optparse'
 require 'yaml'
-require_relative '../lib/cloudfront_invalidator'
+require_relative '../lib/cloudfront_client'
 require_relative '../lib/s3_loader'
 
 class UI
@@ -49,7 +49,6 @@ class UI
       {
         :key => yml['s3_key'],
         :secret => yml['s3_secret'],
-        :bucket => yml['s3_bucket'],
         :distribution => yml['cloudfront_distribution_id']
       }
     end
@@ -77,7 +76,6 @@ class UI
       sample = <<-EOF
     s3_key: YOUR_AWS_S3_ACCESS_KEY_ID
     s3_secret: YOUR_AWS_S3_SECRET_ACCESS_KEY
-    s3_bucket: your.bucket.com
     cloudfront_distribution_id: YOUR_CLOUDFRONT_DISTRIBUTION_ID
       EOF
     end
@@ -100,10 +98,6 @@ class UI
                 "Amazon Web Services API secret key") do |val|
           options[:secret] = val
         end
-        opts.on("-b", "--bucket BUCKET NAME",
-                "S3 bucket name") do |val|
-          options[:bucket] = val
-        end
         opts.on("-d", "--distribution CLOUDFRONT ID",
                 "Cloudfront distribution id") do |val|
           options[:distribution] = val
@@ -123,11 +117,31 @@ class UI
   end
 end
 
-options = UI.new.parse_or_print_help
+class Orchestrator
+  def initialize
+    @options = UI.new.parse_or_print_help
+    @cf = CloudfrontClient.new(
+      @options[:key], @options[:secret], @options[:distribution])
+  end
 
-s3_object_keys = S3Loader.new(
-  options[:key], options[:secret]).list_keys(options[:bucket])
+  def resolve_s3_bucket_name
+    @s3_bucket_name = @cf.get_s3_bucket_name
+    if @s3_bucket_name
+      puts "Resolving S3 bucket name... Got #{@s3_bucket_name.yellow}"
+    else
+      puts
+        "The Cloudfront distribution is not based on an S3 bucket".red
+      exit
+    end
+  end
 
-invalidator = CloudfrontInvalidator.new(
-  options[:key], options[:secret], options[:distribution])
-invalidator.invalidate(s3_object_keys)
+  def invalidate_cf_dist
+    s3_object_keys = S3Loader.new(
+      @options[:key], @options[:secret]).list_keys(@s3_bucket_name)
+    @cf.invalidate(s3_object_keys)
+  end
+end
+
+orchestrator = Orchestrator.new
+orchestrator.resolve_s3_bucket_name
+orchestrator.invalidate_cf_dist

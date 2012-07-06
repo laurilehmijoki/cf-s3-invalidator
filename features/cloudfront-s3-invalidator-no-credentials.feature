@@ -9,18 +9,17 @@ Feature: cloudfront-s3-invalidator without AWS credentials
     """
     s3_key: YOUR_AWS_S3_ACCESS_KEY_ID
     s3_secret: YOUR_AWS_S3_SECRET_ACCESS_KEY
-    s3_bucket: your.bucket.com
     cloudfront_distribution_id: CF_ID
     """
     When I run `cf-s3-inv`
     Then the output should contain:
     """
-    The AWS Access Key Id you provided does not exist in our records. (AWS::S3::Errors::InvalidAccessKeyId)
+    The security token included in the request is invalid
     """
 
   Scenario: Run cf-s3-inv with CLI arguments containing invalid AWS access key
-    When I run `cf-s3-inv --key invalid-aws-key --secret invalid-aws-secret --bucket some-bucket --distribution some-dist`
+    When I run `cf-s3-inv --key invalidawskey --secret invalidawssecret --distribution some-dist`
     Then the output should contain:
     """
-    The AWS Access Key Id you provided does not exist in our records. (AWS::S3::Errors::InvalidAccessKeyId)
+    The security token included in the request is invalid
     """
