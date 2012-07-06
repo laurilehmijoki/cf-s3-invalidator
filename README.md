@@ -1,8 +1,8 @@
 # Invalidator for AWS S3-based Cloudfront distributions
 
 [![Build Status](https://secure.travis-ci.org/laurilehmijoki/cf-s3-invalidator.png)]
-
 (http://travis-ci.org/laurilehmijoki/cf-s3-invalidator)
+
 If your Amazon Web Services Cloudfront distribution is based on AWS S3, then
 this library may be useful to you.
 
