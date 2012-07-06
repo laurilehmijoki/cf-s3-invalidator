@@ -46,11 +46,26 @@ class UI
   class FileOptionParser
     def parse
       yml = YAML.load_file(get_conf_file_path)
+      validate_keys(yml)
       {
-        :key => yml['s3_key'],
-        :secret => yml['s3_secret'],
+        # For backward compatibility, support s3_key and s3_secret
+        :key => yml['s3_key'] ? yml['s3_key'] : yml['aws_key'],
+        :secret => yml['s3_secret'] ? yml['s3_secret'] : yml['aws_secret'],
         :distribution => yml['cloudfront_distribution_id']
       }
+    end
+
+    def validate_keys(config)
+      def test_keys(alternative_config_keys, error_message, config)
+        valid = config.keys.any? { |key| alternative_config_keys.include? key }
+        raise error_message.red unless valid
+      end
+      test_keys(["s3_key", "aws_key"],
+                "AWS key missing in the configuration file", config)
+      test_keys(["s3_secret", "aws_secret"],
+                "AWS secret missing in the configuration file", config)
+      test_keys(["cloudfront_distribution_id"],
+                "Cloudfront distribution id missing in the configuration file", config)
     end
 
     def print_help
