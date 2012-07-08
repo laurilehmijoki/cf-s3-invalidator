@@ -9,8 +9,8 @@ unless Kernel.respond_to?(:require_relative)
 end
 require 'optparse'
 require 'yaml'
-require_relative '../lib/cloudfront_client'
-require_relative '../lib/s3_loader'
+require 'aws-sdk'
+require_relative '../lib/cf-s3-invalidator'
 
 class UI
   def initialize
@@ -152,8 +152,12 @@ module CloudfrontS3Invalidator
     end
 
     def invalidate_cf_dist
-      s3_object_keys = S3Loader.new(
-        @options[:key], @options[:secret]).list_keys(@s3_bucket_name)
+      s3 = AWS::S3.new(
+        :access_key_id => @options[:key],
+        :secret_access_key => @options[:secret])
+      s3_object_keys = s3.buckets[@s3_bucket_name].objects.map { |object|
+        object.key
+      }
       @cf.invalidate(s3_object_keys)
     end
   end
