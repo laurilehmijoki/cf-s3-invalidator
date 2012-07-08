@@ -132,31 +132,33 @@ class UI
   end
 end
 
-class Orchestrator
-  def initialize
-    @options = UI.new.parse_or_print_help
-    @cf = CloudfrontClient.new(
-      @options[:key], @options[:secret], @options[:distribution])
-  end
-
-  def resolve_s3_bucket_name
-    @s3_bucket_name = @cf.get_s3_bucket_name
-    if @s3_bucket_name
-      puts "Resolving S3 bucket name... Got #{@s3_bucket_name.yellow}"
-    else
-      puts
-        "The Cloudfront distribution is not based on an S3 bucket".red
-      exit
+module CloudfrontS3Invalidator
+  class Orchestrator
+    def initialize
+      @options = UI.new.parse_or_print_help
+      @cf = CloudfrontClient.new(
+        @options[:key], @options[:secret], @options[:distribution])
     end
-  end
 
-  def invalidate_cf_dist
-    s3_object_keys = S3Loader.new(
-      @options[:key], @options[:secret]).list_keys(@s3_bucket_name)
-    @cf.invalidate(s3_object_keys)
+    def resolve_s3_bucket_name
+      @s3_bucket_name = @cf.get_s3_bucket_name
+      if @s3_bucket_name
+        puts "Resolving S3 bucket name... Got #{@s3_bucket_name.yellow}"
+      else
+        puts
+          "The Cloudfront distribution is not based on an S3 bucket".red
+        exit
+      end
+    end
+
+    def invalidate_cf_dist
+      s3_object_keys = S3Loader.new(
+        @options[:key], @options[:secret]).list_keys(@s3_bucket_name)
+      @cf.invalidate(s3_object_keys)
+    end
   end
 end
 
-orchestrator = Orchestrator.new
+orchestrator = CloudfrontS3Invalidator::Orchestrator.new
 orchestrator.resolve_s3_bucket_name
 orchestrator.invalidate_cf_dist
