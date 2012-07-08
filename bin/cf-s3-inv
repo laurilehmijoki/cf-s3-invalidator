@@ -10,6 +10,7 @@ end
 require 'optparse'
 require 'yaml'
 require 'aws-sdk'
+require 'colored'
 require_relative '../lib/cf-s3-invalidator'
 
 class UI
