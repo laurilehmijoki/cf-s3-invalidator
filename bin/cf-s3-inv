@@ -10,6 +10,7 @@ end
 require 'optparse'
 require 'yaml'
 require 'aws-sdk'
+require 'simple-cloudfront-invalidator'
 require 'colored'
 require_relative '../lib/cf-s3-invalidator'
 
@@ -137,12 +138,12 @@ module CloudfrontS3Invalidator
   class Orchestrator
     def initialize
       @options = UI.new.parse_or_print_help
-      @cf = CloudfrontClient.new(
-        @options[:key], @options[:secret], @options[:distribution])
     end
 
     def resolve_s3_bucket_name
-      @s3_bucket_name = @cf.get_s3_bucket_name
+      cf = CloudfrontS3Invalidator::CloudfrontClient.new(
+        @options[:key], @options[:secret], @options[:distribution])
+      @s3_bucket_name = cf.get_s3_bucket_name
       if @s3_bucket_name
         puts "Resolving S3 bucket name... Got #{@s3_bucket_name.yellow}"
       else
@@ -159,7 +160,9 @@ module CloudfrontS3Invalidator
       s3_object_keys = s3.buckets[@s3_bucket_name].objects.map { |object|
         object.key
       }
-      @cf.invalidate(s3_object_keys)
+      simple_cf = SimpleCloudfrontInvalidator::CloudfrontClient.new(
+        @options[:key], @options[:secret], @options[:distribution])
+      puts simple_cf.invalidate(s3_object_keys)
     end
   end
 end

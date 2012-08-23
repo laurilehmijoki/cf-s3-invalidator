@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'cf-s3-invalidator'
-  s.version       = '0.3.9'
+  s.version       = '0.4.0'
   s.license       = 'MIT'
   s.summary       = 'A tool for invalidating AWS S3-based Cloudfront distributions'
   s.description   =
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/laurilehmijoki/cf-s3-invalidator'
 
   s.add_dependency 'aws-sdk'
+  s.add_dependency 'simple-cloudfront-invalidator'
   s.add_dependency 'colored', '= 1.2'
 
   s.add_development_dependency 'cucumber'

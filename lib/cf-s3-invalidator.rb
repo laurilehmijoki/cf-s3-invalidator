@@ -13,26 +13,6 @@ module CloudfrontS3Invalidator
       @distribution = distribution
     end
 
-    def invalidate(items)
-      items = to_cf_keys(items)
-      body = %|
-        <InvalidationBatch>
-          <Paths>
-            <Quantity>#{items.length}</Quantity>
-            <Items>
-              #{to_xml items}
-            </Items>
-          </Paths>
-          <CallerReference>#{Time.now.utc.to_i}</CallerReference>
-        </InvalidationBatch>
-      |
-      res = sign_and_call(
-        "https://cloudfront.amazonaws.com/2012-05-05/distribution/#{@distribution}/invalidation",
-        Net::HTTP::Post,
-        body)
-      print_invalidation_result(res, items)
-    end
-
     def get_s3_bucket_name
       res = sign_and_call(
         "https://cloudfront.amazonaws.com/2012-05-05/distribution/#{@distribution}",
@@ -70,22 +50,6 @@ module CloudfrontS3Invalidator
       else
         raise "AWS API call failed. Reason:".red + "\n" + res.body
       end
-    end
-
-    def print_invalidation_result(http_response, items)
-      puts "Invalidating Cloudfront items..."
-      items.each do |item|
-        puts "  #{item}".yellow
-      end
-      puts "succeeded".green
-    end
-
-    def to_cf_keys(s3_keys)
-      s3_keys.map { |s3_key| "/#{s3_key}" }
-    end
-
-    def to_xml(items)
-      items.map { |item| "<Path>#{item}</Path>" }
     end
   end
 end
