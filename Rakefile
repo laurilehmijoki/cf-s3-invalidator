@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 desc "Build the project"
 task :default => 'test'
 
