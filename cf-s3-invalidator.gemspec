@@ -16,11 +16,12 @@ Gem::Specification.new do |s|
   s.executables   << 'cf-s3-inv'
   s.homepage      = 'https://github.com/laurilehmijoki/cf-s3-invalidator'
 
-  s.add_dependency 'aws-sdk'
-  s.add_dependency 'simple-cloudfront-invalidator'
+  s.add_dependency 'aws-sdk', '~> 1.8.0'
+  s.add_dependency 'simple-cloudfront-invalidator', '~> 1.0.0'
   s.add_dependency 'colored', '= 1.2'
 
-  s.add_development_dependency 'cucumber'
-  s.add_development_dependency 'rake'
+  s.add_development_dependency 'cucumber', '~> 1.2.1'
+  s.add_development_dependency 'rspec', '~> 2.12.0'
+  s.add_development_dependency 'rake', '~> 10.0.3'
   s.add_development_dependency 'aruba', '>= 0.4.7'
 end
