@@ -162,7 +162,7 @@ module CloudfrontS3Invalidator
       }
       simple_cf = SimpleCloudfrontInvalidator::CloudfrontClient.new(
         @options[:key], @options[:secret], @options[:distribution])
-      puts simple_cf.invalidate(s3_object_keys)
+      puts simple_cf.invalidate(s3_object_keys)[:text_report]
     end
   end
 end
