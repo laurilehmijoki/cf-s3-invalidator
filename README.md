@@ -35,6 +35,16 @@ Run tests:
 
 `rake test`
 
+## Troubleshooting
+
+* Verify that the AWS user has CloudFront permissions. In the AWS web interface, this
+  will be in the `permissions` section of 
+  `https://console.aws.amazon.com/iam/home?region=REGION-CODE#users/USERNAME`
+
+* If you're using cf-s3-invalidator from Travis CI, be sure the credentials are
+  [encrypted](http://docs.travis-ci.com/user/encryption-keys/) with the correct key
+  for the repository
+
 ## License
 
 MIT
