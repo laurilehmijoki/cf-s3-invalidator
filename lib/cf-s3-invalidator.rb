@@ -32,7 +32,7 @@ module CloudfrontS3Invalidator
     def sign_and_call(url, method, body = nil)
       date = Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
       digest = Base64.encode64(
-        OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'), @aws_secret, date)).strip
+        OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), @aws_secret, date)).strip
       uri = URI.parse(url)
       req = method.new(uri.path)
       req.initialize_http_header({
