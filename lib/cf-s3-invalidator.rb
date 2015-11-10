@@ -18,7 +18,7 @@ module CloudfrontS3Invalidator
         "https://cloudfront.amazonaws.com/2012-05-05/distribution/#{@distribution}",
         Net::HTTP::Get)
       matches =
-        res.body.scan(/<DomainName>([\w|\.]+)\.s3\.amazonaws\.com<\/DomainName>/)
+        res.body.scan(/<DomainName>([\w|\.|\-]+)\.s3([\w|\-]*)\.amazonaws\.com<\/DomainName>/)
       if matches.empty?
         nil
       else
